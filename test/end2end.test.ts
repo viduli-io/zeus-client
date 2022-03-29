@@ -69,8 +69,34 @@ t.test('MangoClient', async () => {
           body: 'nonce'
         })
 
-      t.equal(meta.matched, 1)
-      t.equal(meta.modified, 1)
+      t.equal(meta.matchedCount, 1)
+      t.equal(meta.modifiedCount, 1)
+    })
+  })
+
+  t.test('upsert', async () => {
+    t.test('successfully inserts a new doc', async () => {
+      const { data, error } = await client.collection<TestBlogType>('blogs')
+        .upsert({
+          _id: '6241aaaabaca358758365a99',
+          title: 'Upsert inserts this doc',
+          body: 'Use your keyboard'
+        })
+
+      t.equal(data.title, 'Upsert inserts this doc')
+      t.notOk(error)
+    })
+
+    t.test('successfully updates the doc', async () => {
+      const { data, error } = await client.collection<TestBlogType>('blogs')
+        .upsert({
+          _id: '6241aaaabaca358758365a99',
+          title: 'Upsert modifies this doc',
+          body: 'Use your keyboard'
+        })
+
+      t.equal(data.title, 'Upsert modifies this doc')
+      t.notOk(error)
     })
   })
 
@@ -96,12 +122,12 @@ t.test('MangoClient', async () => {
       const { meta } = await client.collection<TestBlogType>('blogs')
         .updateMany(updates)
 
-      t.equal(meta.matched, 5)
-      t.equal(meta.modified, 5)
+      t.equal(meta.matchedCount, 5)
+      t.equal(meta.modifiedCount, 5)
     })
 
     t.test('successfully deletes many docs', async () => {
-      const { } = await client.collection<TestBlogType>('blogs')
+      const {} = await client.collection<TestBlogType>('blogs')
         .deleteMany(data.map(d => d._id))
 
       t.ok('test')

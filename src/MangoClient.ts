@@ -26,11 +26,35 @@ interface RequestOptions {
   data?: any
 }
 
-interface BaseResult {
+interface ResultBase {
   error: any
 }
 
-interface FindByIdResult<TDoc> extends BaseResult {
+export interface FindByIdResult<TDoc> extends ResultBase {
+  data: TDoc
+}
+
+export interface CreateResult<TDoc> extends ResultBase {
+  data: TDoc
+}
+
+export interface CreateManyResult<TDoc> extends ResultBase {
+  data: TDoc[]
+}
+
+export interface UpdateResult<TDoc> extends ResultBase {
+  meta: { matchedCount: number, modifiedCount: number }
+}
+
+export interface UpdateManyResult<TDoc> extends UpdateResult<TDoc> {
+
+}
+
+export interface DeleteManyResult<TDoc> extends ResultBase {
+  deletedCount: number
+}
+
+export interface UpsertResult<TDoc> extends ResultBase {
   data: TDoc
 }
 
@@ -49,32 +73,37 @@ class CollectionQueryBuilder<TDoc extends { _id: string }> {
     return `${this.endpoint}/${this.collectionName}/documents`
   }
 
-  public async findById<TDoc>(id: string): Promise<FindByIdResult<TDoc>> {
+  public async findById(id: string): Promise<FindByIdResult<TDoc>> {
     return this._client.request(`${this._documentEndpoint}/${id}`)
   }
 
-  public async create(doc: Omit<TDoc, '_id'>): Promise<{ error: any, data: TDoc }> {
+  public async create(doc: Omit<TDoc, '_id'>): Promise<CreateResult<TDoc>> {
     return this._client.post(this._documentEndpoint, doc)
   }
 
-  public async createMany(docs: Omit<TDoc, '_id'>[]): Promise<{ error: any, data: TDoc[] }> {
+  public async createMany(docs: Omit<TDoc, '_id'>[]): Promise<CreateManyResult<TDoc>> {
     return this._client.post(this._documentEndpoint, docs)
   }
 
-  public async update(doc: Partial<TDoc>): Promise<{ error: any, meta: { matched: number, modified: number } }> {
+  public async update(doc: Partial<TDoc>): Promise<UpdateResult<TDoc>> {
     const { _id, ...rest } = doc
     return this._client.patch(`${this._documentEndpoint}/${_id}`, rest)
   }
 
-  public async updateMany(docs: Partial<TDoc>[]): Promise<{ error: any, meta: { matched: number, modified: number } }> {
+  public async updateMany(docs: Partial<TDoc>[]): Promise<UpdateManyResult<TDoc>> {
     return this._client.patch(`${this._documentEndpoint}`, docs)
+  }
+
+  public async upsert(doc: Partial<TDoc>): Promise<UpsertResult<TDoc>> {
+    const { _id, ...rest } = doc
+    return this._client.put(`${this._documentEndpoint}/${_id}`, doc)
   }
 
   public async delete(id: string): Promise<{ error: any }> {
     return this._client.delete(`${this._documentEndpoint}/${id}`)
   }
 
-  public async deleteMany(ids: string[]): Promise<{ error: any }> {
+  public async deleteMany(ids: string[]): Promise<DeleteManyResult<TDoc>> {
     return this._client.delete(this._documentEndpoint, ids)
   }
 }
@@ -100,15 +129,19 @@ class ApiClient {
     return body
   }
 
-  public async post<TData>(url: string, data: any): Promise<{ error: null, data: TData }> {
+  public async post<T>(url: string, data: any): Promise<T> {
     return this.request(url, { method: 'POST', data })
   }
 
-  public async patch<TData>(url: string, data: any): Promise<{ error: null, meta: { matched: number, modified: number } }> {
+  public async patch<T>(url: string, data: any): Promise<T> {
     return this.request(url, { method: 'PATCH', data })
   }
 
-  public async delete(url: string, data?: any): Promise<{ error: null }> {
+  public async put<T>(url: string, data: any): Promise<T> {
+    return this.request(url, { method: 'PUT', data })
+  }
+
+  public async delete<T>(url: string, data?: any): Promise<T> {
     return this.request(url, { method: 'DELETE', data })
   }
 }
