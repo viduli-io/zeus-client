@@ -1,0 +1,17 @@
+{
+  "name": "mango-client",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@types/tap": "^15.0.6",
+    "isomorphic-unfetch": "^3.1.0",
+    "tap": "^16.0.1",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3"
+  },
+  "scripts": {
+    "test": "tap --node-arg=--require=ts-node/register",
+    "test:dev": "tap --watch --node-arg=--require=ts-node/register"
+  }
+}
