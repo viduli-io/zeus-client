@@ -9,7 +9,7 @@ import {
   UpdateManyResult,
   UpdateResult,
   UpsertResult
-} from "../MangoClient"
+} from "./types"
 
 export class CollectionQueryBuilder<TDoc extends { _id: string }> {
   private _client: ApiClient
