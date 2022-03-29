@@ -1,4 +1,6 @@
-import fetch from 'isomorphic-unfetch'
+import type { Filter } from "mongodb"
+import { ApiClient } from "./lib/ApiClient"
+import { CollectionFilterBuilder } from "./lib/CollectionFilterBuilder"
 
 const log = console.dir.bind(console)
 
@@ -19,11 +21,6 @@ export default class MangoClient {
     this._token = token
   }
 
-}
-
-interface RequestOptions {
-  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
-  data?: any
 }
 
 interface ResultBase {
@@ -58,6 +55,10 @@ export interface UpsertResult<TDoc> extends ResultBase {
   data: TDoc
 }
 
+export interface FindResult<TDoc> extends ResultBase {
+  data: TDoc[]
+}
+
 class CollectionQueryBuilder<TDoc extends { _id: string }> {
   private _client: ApiClient
 
@@ -75,6 +76,10 @@ class CollectionQueryBuilder<TDoc extends { _id: string }> {
 
   public async findById(id: string): Promise<FindByIdResult<TDoc>> {
     return this._client.request(`${this._documentEndpoint}/${id}`)
+  }
+
+  public find(filters: Filter<TDoc>): CollectionFilterBuilder<TDoc> {
+    return new CollectionFilterBuilder(this._client, this._documentEndpoint, filters)
   }
 
   public async create(doc: Omit<TDoc, '_id'>): Promise<CreateResult<TDoc>> {
@@ -109,39 +114,3 @@ class CollectionQueryBuilder<TDoc extends { _id: string }> {
 }
 
 
-class ApiClient {
-  constructor(private token: string) {
-  }
-
-  public async request(url: string, {
-    method,
-    data
-  }: RequestOptions = {}): Promise<any> {
-    const response = await fetch(url, {
-      body: JSON.stringify(data) ?? undefined,
-      method: method ?? 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + this.token
-      }
-    })
-    const body = await response.json()
-    return body
-  }
-
-  public async post<T>(url: string, data: any): Promise<T> {
-    return this.request(url, { method: 'POST', data })
-  }
-
-  public async patch<T>(url: string, data: any): Promise<T> {
-    return this.request(url, { method: 'PATCH', data })
-  }
-
-  public async put<T>(url: string, data: any): Promise<T> {
-    return this.request(url, { method: 'PUT', data })
-  }
-
-  public async delete<T>(url: string, data?: any): Promise<T> {
-    return this.request(url, { method: 'DELETE', data })
-  }
-}
