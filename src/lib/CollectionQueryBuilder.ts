@@ -1,5 +1,5 @@
 import { Filter } from "mongodb"
-import { ApiClient } from "./ApiClient"
+import { ApiClient, IApiClient } from "./ApiClient"
 import { CollectionFilterBuilder } from "./CollectionFilterBuilder"
 import {
   CreateManyResult,
@@ -12,7 +12,7 @@ import {
 } from "./types"
 
 export class CollectionQueryBuilder<TDoc extends { _id: string }> {
-  private _client: ApiClient
+  private readonly _client: IApiClient
 
   constructor(
     private collectionName: string,
@@ -27,10 +27,10 @@ export class CollectionQueryBuilder<TDoc extends { _id: string }> {
   }
 
   public async findById(id: string): Promise<FindByIdResult<TDoc>> {
-    return this._client.request(`${this._documentEndpoint}/${id}`)
+    return this._client.get(`${this._documentEndpoint}/${id}`)
   }
 
-  public find(filters: Filter<TDoc>): CollectionFilterBuilder<TDoc> {
+  public find(filters: Filter<TDoc> = {}): CollectionFilterBuilder<TDoc> {
     return new CollectionFilterBuilder(this._client, this._documentEndpoint, filters)
   }
 

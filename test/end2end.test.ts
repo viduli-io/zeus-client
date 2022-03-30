@@ -9,7 +9,7 @@ interface TestBlogType {
 
 const test_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.zbgd5BNF1cqQ_prCEqIvBTjSxMS8bDLnJAE_wE-0Cxg'
 
-t.test('MangoClient', async () => {
+t.skip('MangoClient', async () => {
   const client = new MangoClient()
   client.setAuth(test_token)
 
@@ -132,5 +132,12 @@ t.test('MangoClient', async () => {
 
       t.ok('test')
     })
+  })
+
+  t.skip('find', async () => {
+    const res = await client.collection<TestBlogType>('blogs')
+      .find({ title: { $eq: 'what now 4' } })
+
+    console.log(res)
   })
 })

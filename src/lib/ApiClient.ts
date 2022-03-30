@@ -5,11 +5,23 @@ export interface RequestOptions {
   data?: any
 }
 
-export class ApiClient {
+export interface IApiClient {
+  get<T>(url: string): Promise<T>
+
+  post<T>(url: string, data: any): Promise<T>
+
+  patch<T>(url: string, data: any): Promise<T>
+
+  put<T>(url: string, data: any): Promise<T>
+
+  delete<T>(url: string, data?: any): Promise<T>
+}
+
+export class ApiClient implements IApiClient {
   constructor(private token: string) {
   }
 
-  public async request(url: string, {
+  async request(url: string, {
     method,
     data
   }: RequestOptions = {}): Promise<any> {
@@ -25,19 +37,23 @@ export class ApiClient {
     return body
   }
 
-  public async post<T>(url: string, data: any): Promise<T> {
+  async get<T>(url: string): Promise<T> {
+    return this.request(url, { method: 'GET' })
+  }
+
+  async post<T>(url: string, data: any): Promise<T> {
     return this.request(url, { method: 'POST', data })
   }
 
-  public async patch<T>(url: string, data: any): Promise<T> {
+  async patch<T>(url: string, data: any): Promise<T> {
     return this.request(url, { method: 'PATCH', data })
   }
 
-  public async put<T>(url: string, data: any): Promise<T> {
+  async put<T>(url: string, data: any): Promise<T> {
     return this.request(url, { method: 'PUT', data })
   }
 
-  public async delete<T>(url: string, data?: any): Promise<T> {
+  async delete<T>(url: string, data?: any): Promise<T> {
     return this.request(url, { method: 'DELETE', data })
   }
 }
