@@ -12,14 +12,12 @@ import {
 } from "./types"
 
 export class CollectionQueryBuilder<TDoc extends { _id: string }> {
-  private readonly _client: IApiClient
 
   constructor(
     private collectionName: string,
     private endpoint: string,
-    private token: string
+    private readonly _client: IApiClient,
   ) {
-    this._client = new ApiClient(token)
   }
 
   private get _documentEndpoint() {

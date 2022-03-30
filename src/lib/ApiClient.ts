@@ -18,20 +18,23 @@ export interface IApiClient {
 }
 
 export class ApiClient implements IApiClient {
-  constructor(private token: string) {
+  constructor(private token?: string) {
   }
 
   async request(url: string, {
     method,
     data
   }: RequestOptions = {}): Promise<any> {
+    const headers: Record<string, string> = {}
+    if (data)
+      headers['Content-Type'] = 'application/json'
+    if (this.token)
+      headers['Authorization'] = 'Bearer ' + this.token
+
     const response = await fetch(url, {
       body: JSON.stringify(data) ?? undefined,
       method: method ?? 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + this.token
-      }
+      headers
     })
     const body = await response.json()
     return body

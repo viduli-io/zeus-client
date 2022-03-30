@@ -1,3 +1,4 @@
+import { ApiClient } from "./lib/ApiClient"
 import { CollectionQueryBuilder } from "./lib/CollectionQueryBuilder"
 
 const log = console.dir.bind(console)
@@ -12,7 +13,7 @@ export default class MangoClient {
   }
 
   public collection<T extends { _id: string }>(name: string): CollectionQueryBuilder<T> {
-    return new CollectionQueryBuilder<T>(name, this._collectionsEndpoint, this._token)
+    return new CollectionQueryBuilder<T>(name, this._collectionsEndpoint, new ApiClient(this._token))
   }
 
   public setAuth(token: string) {

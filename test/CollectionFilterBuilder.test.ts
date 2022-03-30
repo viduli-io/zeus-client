@@ -15,7 +15,7 @@ const testDollarFilter = (filter: string, value: any = 'value') => {
     // @ts-ignore
     await builder[filter]('field', value)
 
-    t.same(client.callState.get[0], `?filter=${encodeURIComponent(JSON.stringify({ field: { [`$${filter}`]: value } }))}`)
+    t.same(client.callStack[0][1], `?filter=${encodeURIComponent(JSON.stringify({ field: { [`$${filter}`]: value } }))}`)
   })
 }
 
@@ -25,7 +25,7 @@ t.test('applies default filter', async () => {
 
   await builder
 
-  t.same(client.callState.get[0], `?filter=${encodeURIComponent('{}')}`)
+  t.same(client.callStack[0][1], `?filter=${encodeURIComponent('{}')}`)
 })
 
 ;[ 'eq', 'gt', 'gte', 'lt', 'lte', 'ne', 'in', 'nin', 'regex' ].forEach(op => {
@@ -42,7 +42,7 @@ t.test('applies geo intersects filter', async () => {
 
   await builder.geoIntersects('location', { type: 'Geometry' })
 
-  t.same(client.callState.get[0], `?filter=${
+  t.same(client.callStack[0][1], `?filter=${
     encodeURIComponent(JSON.stringify({
       location: { $geoIntersects: { $geometry: { type: 'Geometry' } } }
     }))
@@ -55,7 +55,7 @@ t.test('applies skip', async () => {
 
   await builder.skip(100)
 
-  t.same(client.callState.get[0], `?filter=${encodeURIComponent('{}')}&skip=100`)
+  t.same(client.callStack[0][1], `?filter=${encodeURIComponent('{}')}&skip=100`)
 })
 
 t.test('applies limit', async () => {
@@ -64,5 +64,5 @@ t.test('applies limit', async () => {
 
   await builder.limit(100)
 
-  t.same(client.callState.get[0], `?filter=${encodeURIComponent('{}')}&limit=100`)
+  t.same(client.callStack[0][1], `?filter=${encodeURIComponent('{}')}&limit=100`)
 })
