@@ -1,12 +1,17 @@
 import { ApiClient } from "./lib/ApiClient"
 import { CollectionQueryBuilder } from "./lib/CollectionQueryBuilder"
 
-const log = console.dir.bind(console)
-
 export default class MangoClient {
   private _mangoEndpoint = 'http://localhost:3000'
   private _collectionsUrl = '/collections/v1'
   private _token = ''
+
+  constructor(
+    endpoint?: string
+  ) {
+    if (endpoint)
+      this._mangoEndpoint = endpoint
+  }
 
   private get _collectionsEndpoint() {
     return this._mangoEndpoint + this._collectionsUrl

@@ -13,6 +13,7 @@ t.skip('MangoClient', async () => {
   const client = new MangoClient()
   client.setAuth(test_token)
 
+
   t.test('find by id', async () => {
 
     t.test('successfully fetches existing doc', async () => {

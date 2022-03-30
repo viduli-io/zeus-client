@@ -1,18 +1,23 @@
 {
   "name": "mango-client",
   "version": "0.0.1",
-  "main": "index.js",
+  "main": "dist/main/index.js",
   "license": "MIT",
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "test": "tap --node-arg=--require=ts-node/register",
+    "test:dev": "tap --watch --node-arg=--require=ts-node/register"
+  },
   "dependencies": {
-    "@types/tap": "^15.0.6",
     "isomorphic-unfetch": "^3.1.0",
     "mongodb": "^4.4.1",
     "tap": "^16.0.1",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.3"
   },
-  "scripts": {
-    "test": "tap --node-arg=--require=ts-node/register",
-    "test:dev": "tap --watch --node-arg=--require=ts-node/register"
+    "devDependencies": {
+    "@types/node": "^17.0.23",
+    "@types/node-fetch": "^2.6.1",
+    "@types/tap": "^15.0.6"
   }
 }

@@ -1,0 +1,12 @@
+*.log
+npm-debug.log*
+
+.nyc_output
+
+node_modules
+
+package-lock.json
+yarn.lock
+
+src
+test
