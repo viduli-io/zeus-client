@@ -1,5 +1,5 @@
-import { Filter } from "mongodb"
-import { ApiClient, IApiClient } from "./ApiClient"
+import type { Filter } from "mongodb"
+import { IApiClient } from "./ApiClient"
 import { CollectionFilterBuilder } from "./CollectionFilterBuilder"
 import {
   CreateManyResult,

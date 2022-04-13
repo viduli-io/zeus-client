@@ -1,3 +1,14 @@
-import MangoClient from './MangoClient'
+import ViduliClient from './ViduliClient'
 
-export { MangoClient }
+export {
+  FindResult,
+  DeleteManyResult,
+  UpdateManyResult,
+  UpdateResult,
+  CreateManyResult,
+  CreateResult,
+  FindByIdResult,
+  UpsertResult
+} from './lib/types'
+
+export { ViduliClient }

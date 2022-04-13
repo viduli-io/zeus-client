@@ -8,7 +8,11 @@ const callStack = {
 
 const { CollectionQueryBuilder } = t.mock('../src/lib/CollectionQueryBuilder', {
   '../src/lib/CollectionFilterBuilder': {
-    CollectionFilterBuilder: (...args: any[]) => callStack.calls.push(...args)
+    CollectionFilterBuilder: class X {
+      constructor(...args: any[]) {
+        callStack.calls.push(args)
+      }
+    }
   }
 })
 
@@ -24,10 +28,10 @@ t.test('CollectionQueryBuilder', async () => {
   t.test('find', async () => {
     builder.find()
 
-    const [ _client, docEndpoint, filters ] =  callStack.calls[0]
+    const [ _client, docEndpoint, filters ] = callStack.calls[0]
     t.equal(_client, client)
     t.equal(docEndpoint, 'endpoint/collection/documents')
-    t.equal(filters, {})
+    t.same(filters, {})
   })
 
   t.test('find by id calls get', async () => {
@@ -97,6 +101,6 @@ t.test('CollectionQueryBuilder', async () => {
     const [ method, url, data ] = client.callStack[0]
     t.equal(method, 'delete')
     t.equal(url, 'endpoint/collection/documents')
-    t.equal(data, [ 'xxxx' ])
+    t.same(data, [ 'xxxx' ])
   })
 })

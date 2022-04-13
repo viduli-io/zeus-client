@@ -1,5 +1,5 @@
 import t from 'tap'
-import MangoClient from "../src/MangoClient"
+import ViduliClient from "../src/ViduliClient"
 
 interface TestBlogType {
   _id: string
@@ -9,8 +9,8 @@ interface TestBlogType {
 
 const test_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.zbgd5BNF1cqQ_prCEqIvBTjSxMS8bDLnJAE_wE-0Cxg'
 
-t.skip('MangoClient', async () => {
-  const client = new MangoClient()
+t.skip('ViduliClient', async () => {
+  const client = new ViduliClient()
   client.setAuth(test_token)
 
 

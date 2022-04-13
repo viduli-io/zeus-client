@@ -1,8 +1,8 @@
 import { ApiClient } from "./lib/ApiClient"
 import { CollectionQueryBuilder } from "./lib/CollectionQueryBuilder"
 
-export default class MangoClient {
-  private _mangoEndpoint = 'http://localhost:3000'
+export default class ViduliClient {
+  private _endpoint = 'http://localhost:3000'
   private _collectionsUrl = '/collections/v1'
   private _token = ''
 
@@ -10,11 +10,11 @@ export default class MangoClient {
     endpoint?: string
   ) {
     if (endpoint)
-      this._mangoEndpoint = endpoint
+      this._endpoint = endpoint
   }
 
   private get _collectionsEndpoint() {
-    return this._mangoEndpoint + this._collectionsUrl
+    return this._endpoint + this._collectionsUrl
   }
 
   public collection<T extends { _id: string }>(name: string): CollectionQueryBuilder<T> {
@@ -24,5 +24,4 @@ export default class MangoClient {
   public setAuth(token: string) {
     this._token = token
   }
-
 }
