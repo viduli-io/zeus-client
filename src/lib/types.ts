@@ -34,3 +34,15 @@ export interface UpsertResult<TDoc> extends ResultBase {
 export interface FindResult<TDoc> extends ResultBase {
   data: TDoc[]
 }
+
+export interface NonceResult extends ResultBase {
+  data: { nonce: string }
+}
+
+export interface AuthUser {
+  _id: string
+}
+
+export interface AuthenticationResult<T extends AuthUser> extends ResultBase {
+  data: { accessToken: string, user: T }
+}
