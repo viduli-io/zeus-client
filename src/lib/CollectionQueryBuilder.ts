@@ -1,35 +1,30 @@
-import type { Filter } from "mongodb"
 import { IApiClient } from "./ApiClient"
 import { CollectionFilterBuilder } from "./CollectionFilterBuilder"
 import {
   CreateManyResult,
   CreateResult,
   DeleteManyResult,
-  FindByIdResult,
+  FindOneResult,
   UpdateManyResult,
-  UpdateResult,
   UpsertResult
 } from "./types"
 
-export class CollectionQueryBuilder<TDoc extends { _id: string }> {
+export class CollectionQueryBuilder<TDoc extends { _id: string }> extends CollectionFilterBuilder<TDoc> {
+  private static readonly _collectionsUrl = '/collections/v1'
 
   constructor(
-    private collectionName: string,
-    private endpoint: string,
-    private readonly _client: IApiClient,
+    collectionName: string,
+    _client: IApiClient,
   ) {
+    super(_client, `${CollectionQueryBuilder._collectionsUrl}/${collectionName}/documents`, {})
   }
 
-  private get _documentEndpoint() {
-    return `${this.endpoint}/${this.collectionName}/documents`
-  }
-
-  public async findById(id: string): Promise<FindByIdResult<TDoc>> {
+  public async get(id: string): Promise<FindOneResult<TDoc>> {
     return this._client.get(`${this._documentEndpoint}/${id}`)
   }
 
-  public find(filters: Filter<TDoc> = {}): CollectionFilterBuilder<TDoc> {
-    return new CollectionFilterBuilder(this._client, this._documentEndpoint, filters)
+  public async findById(id: string): Promise<FindOneResult<TDoc>> {
+    return this.get(id)
   }
 
   public async create(doc: Omit<TDoc, '_id'>): Promise<CreateResult<TDoc>> {
@@ -40,18 +35,13 @@ export class CollectionQueryBuilder<TDoc extends { _id: string }> {
     return this._client.post(this._documentEndpoint, docs)
   }
 
-  public async update(doc: Partial<TDoc>): Promise<UpdateResult<TDoc>> {
-    const { _id, ...rest } = doc
-    return this._client.patch(`${this._documentEndpoint}/${_id}`, rest)
-  }
-
   public async updateMany(docs: Partial<TDoc>[]): Promise<UpdateManyResult<TDoc>> {
     return this._client.patch(`${this._documentEndpoint}`, docs)
   }
 
   public async upsert(doc: Partial<TDoc>): Promise<UpsertResult<TDoc>> {
     const { _id, ...rest } = doc
-    return this._client.put(`${this._documentEndpoint}/${_id}`, doc)
+    return this._client.put(`${this._documentEndpoint}/${_id}`, rest)
   }
 
   public async delete(id: string): Promise<{ error: any }> {

@@ -1,14 +1,14 @@
 import ViduliClient from './ViduliClient'
 
 export {
+  FindOneResult,
   FindResult,
-  DeleteManyResult,
-  UpdateManyResult,
-  UpdateResult,
-  CreateManyResult,
   CreateResult,
-  FindByIdResult,
-  UpsertResult
+  CreateManyResult,
+  UpdateResult,
+  UpdateManyResult,
+  UpsertResult,
+  DeleteManyResult,
 } from './lib/types'
 
 export { ViduliClient }

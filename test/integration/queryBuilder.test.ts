@@ -14,17 +14,28 @@ const { default: ViduliClient } = t.mock('../../src/ViduliClient', {
   }
 })
 
-t.test('query builder', async () => {
+t.test('query builder', async t => {
 
-  t.test('`find()`: all fluent operators', async () => {
+  t.test('`find()`: all fluent operators', async t => {
     const client: ViduliClientType = new ViduliClient()
 
     const result = await client.collection('blogs')
-      .find()
       .lt('age', 10)
       .gte('age', 5)
       .eq('title', 'Wonderful Title')
+      .find()
 
     console.log(result)
   })
+
+  t.test('`update()`: all fluent operators', async t => {
+    const client: ViduliClientType = new ViduliClient()
+    const result = await client.collection('blogs').eq('authorId', 'xxx').update({ })
+  })
+})
+
+t.test('`auth.getUser()`', async t => {
+  const client: ViduliClientType = new ViduliClient()
+
+  const [ err, data ] = await client.auth.getUser()
 })

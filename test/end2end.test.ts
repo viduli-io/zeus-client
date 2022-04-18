@@ -142,3 +142,11 @@ t.skip('ViduliClient', async () => {
     console.log(res)
   })
 })
+
+t.test('dev', async () => {
+  const client = new ViduliClient('http://localhost:3010')
+  const res = await client.collection<TestBlogType>('blogs')
+    .find({ title: { $eq: 'what now 4' } })
+
+  console.log(res)
+})

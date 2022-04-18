@@ -1,4 +1,9 @@
 import fetch from "isomorphic-unfetch"
+import { SessionContainer } from "./SessionContainer"
+
+export class NetworkError extends Error {
+
+}
 
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
@@ -18,7 +23,7 @@ export interface IApiClient {
 }
 
 export class ApiClient implements IApiClient {
-  constructor(private token?: string) {
+  constructor(private session: SessionContainer, private _baseUrl: string = '') {
   }
 
   async request(url: string, {
@@ -28,16 +33,26 @@ export class ApiClient implements IApiClient {
     const headers: Record<string, string> = {}
     if (data)
       headers['Content-Type'] = 'application/json'
-    if (this.token)
-      headers['Authorization'] = 'Bearer ' + this.token
+    if (this.session.accessToken)
+      headers['Authorization'] = 'Bearer ' + this.session.accessToken
 
-    const response = await fetch(url, {
-      body: JSON.stringify(data) ?? undefined,
-      method: method ?? 'GET',
-      headers
-    })
-    const body = await response.json()
-    return body
+    try {
+      const response = await fetch(this._baseUrl + url, {
+        body: JSON.stringify(data) ?? undefined,
+        method: method ?? 'GET',
+        headers,
+        credentials: 'include'
+      })
+      const body = await response.json()
+      return body
+    } catch (e: any) {
+      if (e.message.includes('ECONNREFUSED')) {
+        const error = new NetworkError('ECONNREFUSED')
+        return { error, data: null }
+      } else {
+        throw e
+      }
+    }
   }
 
   async get<T>(url: string): Promise<T> {

@@ -1,34 +1,57 @@
 import type { Filter } from "mongodb"
 import type { IApiClient } from "./ApiClient"
-import { FindResult } from "./types"
+import { FindOneResult, FindResult, UpdateResult } from "./types"
 
 
-export class CollectionFilterBuilder<TDoc> implements PromiseLike<FindResult<TDoc>> {
-  private _skip: number | undefined
-  private _limit: number | undefined
+export class CollectionFilterBuilder<TDoc extends { _id: string }> implements PromiseLike<FindResult<TDoc>> {
+  protected  _skip: number | undefined
+  protected  _limit: number | undefined
 
   constructor(
-    private _client: IApiClient,
-    private _documentEndpoint: string,
-    private _filters: Filter<TDoc>
+    protected _client: IApiClient,
+    protected  _documentEndpoint: string,
+    protected  _filters: Filter<TDoc>
   ) {
   }
 
-  eq = this.createOperator('$eq')
+  public async findOne(filters: Filter<TDoc> = {}): Promise<FindOneResult<TDoc>> {
+    const { error, data  } = await this.find(filters)
+    return { error, data: data[0] }
+  }
 
-  ne = this.createOperator('$ne')
+  public find(filters: Filter<TDoc> = {}): Promise<FindResult<TDoc>> {
+    this._filters = { ...this._filters, ...filters }
+    const params = this.getParams()
 
-  gt = this.createOperator('$gt')
+    return this._client.get<FindResult<TDoc>>(`${this._documentEndpoint}?${params}`)
+  }
 
-  gte = this.createOperator('$gte')
+  public async update(doc: Partial<TDoc>): Promise<UpdateResult<TDoc>>
+  public async update(filter: Filter<TDoc>, doc: Partial<TDoc>): Promise<UpdateResult<TDoc>>
+  public async update(filterOrDoc: Partial<TDoc> | Filter<TDoc>, doc?: Partial<TDoc>): Promise<UpdateResult<TDoc>> {
+    if (doc) {
+      return this._client.patch(`${this._documentEndpoint}?filter=${JSON.stringify(filterOrDoc)}`, doc)
+    } else {
+      const { _id, ...rest } = filterOrDoc
+      return this._client.patch(`${this._documentEndpoint}/${_id}`, rest)
+    }
+  }
 
-  lt = this.createOperator('$lt')
+  public eq = this.createOperator('$eq')
 
-  lte = this.createOperator('$lte')
+  public ne = this.createOperator('$ne')
+
+  public gt = this.createOperator('$gt')
+
+  public gte = this.createOperator('$gte')
+
+  public lt = this.createOperator('$lt')
+
+  public lte = this.createOperator('$lte')
 
   public in = this.createOperator<any[]>('$in')
 
-  nin = this.createOperator<any[]>('$nin')
+  public nin = this.createOperator<any[]>('$nin')
 
   // TODO: implement this
   // not(action: (builder: CollectionFilterBuilder<TDoc>) => void) {
@@ -37,13 +60,13 @@ export class CollectionFilterBuilder<TDoc> implements PromiseLike<FindResult<TDo
   //   this._filters = { ...this._filters, }
   // }
 
-  exists = this.createOperator<boolean>('$exists')
+  public exists = this.createOperator<boolean>('$exists')
 
-  mod = this.createOperator<[ number, number ]>('$mod')
+  public mod = this.createOperator<[ number, number ]>('$mod')
 
-  regex = this.createOperator('$regex')
+  public regex = this.createOperator('$regex')
 
-  geoIntersects(field: string, $geometry: any) {
+  public geoIntersects(field: string, $geometry: any) {
     return new CollectionFilterBuilder(
       this._client,
       this._documentEndpoint,
@@ -60,16 +83,15 @@ export class CollectionFilterBuilder<TDoc> implements PromiseLike<FindResult<TDo
   // $near?: Document;
   // $nearSphere?: Document;
 
-  skip(count: number) {
+  public skip(count: number) {
     this._skip = count
     return this
   }
 
-  limit(count: number) {
+  public limit(count: number) {
     this._limit = count
     return this
   }
-
 
   private createOperator<TValue = any, TOp extends string = string>(op: TOp) {
     return (field: string, value: TValue) => new CollectionFilterBuilder(
@@ -79,9 +101,7 @@ export class CollectionFilterBuilder<TDoc> implements PromiseLike<FindResult<TDo
     )
   }
 
-  then<TResult1 = FindResult<TDoc>, TResult2 = never>(
-    onFulfilled?: ((value: FindResult<TDoc>) => (PromiseLike<TResult1> | TResult1)) | null,
-    onRejected?: ((reason: any) => (PromiseLike<TResult2> | TResult2)) | null): PromiseLike<TResult1 | TResult2> {
+  protected getParams() {
     const params = new URLSearchParams({
       filter: JSON.stringify(this._filters)
     })
@@ -90,6 +110,14 @@ export class CollectionFilterBuilder<TDoc> implements PromiseLike<FindResult<TDo
       params.set('skip', String(this._skip))
     if (this._limit)
       params.set('limit', String(this._limit))
+
+    return params
+  }
+
+  then<TResult1 = FindResult<TDoc>, TResult2 = never>(
+    onFulfilled?: ((value: FindResult<TDoc>) => (PromiseLike<TResult1> | TResult1)) | null,
+    onRejected?: ((reason: any) => (PromiseLike<TResult2> | TResult2)) | null): PromiseLike<TResult1 | TResult2> {
+    const params = this.getParams()
 
     return this._client.get<FindResult<TDoc>>(`${this._documentEndpoint}?${params}`)
       .then(onFulfilled)
