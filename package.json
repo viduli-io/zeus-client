@@ -1,6 +1,6 @@
 {
   "name": "@viduli/client",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "main": "dist/main/index.js",
   "license": "MIT",
   "author": "https://github.com/avin-kavish",
