@@ -1,5 +1,7 @@
 import ViduliClient from './ViduliClient'
 
+export { NetworkError } from './lib/ApiClient'
+
 export {
   FindOneResult,
   FindResult,

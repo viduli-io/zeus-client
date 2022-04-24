@@ -1,5 +1,12 @@
 import { ApiClient } from "./ApiClient"
-import { AuthenticationResult, AuthUser, NonceResult } from "./types"
+import {
+  ArrayOrObjectResult,
+  AuthData,
+  AuthenticationResult,
+  AuthUser,
+  NonceResult
+} from "./types"
+import { toArrayOrObject } from "./utilities"
 
 export class Web3AuthProvider {
   constructor(private _apiClient: ApiClient) {
@@ -10,10 +17,12 @@ export class Web3AuthProvider {
     return this._apiClient.post<NonceResult>(`/auth/v1/web3/v1/nonce`, { walletAddress })
   }
 
-  authenticate<TUser extends AuthUser>(walletAddress: string, signature: string) {
-    return this._apiClient.post<AuthenticationResult<TUser>>(
-      `/auth/v1/web3/v1/authenticate`,
-      { walletAddress, signature }
+  async authenticate<TUser extends AuthUser>(walletAddress: string, signature: string): Promise<ArrayOrObjectResult<AuthData<TUser>>> {
+    return toArrayOrObject(
+      await this._apiClient.post<AuthenticationResult<TUser>>(
+        `/auth/v1/web3/v1/authenticate`,
+        { walletAddress, signature }
+      )
     )
   }
 }

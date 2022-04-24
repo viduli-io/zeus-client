@@ -2,7 +2,6 @@ import fetch from "isomorphic-unfetch"
 import { SessionContainer } from "./SessionContainer"
 
 export class NetworkError extends Error {
-
 }
 
 export interface RequestOptions {
@@ -44,9 +43,27 @@ export class ApiClient implements IApiClient {
         credentials: 'include'
       })
       const body = await response.json()
+
+      // If the body does not contain an explicit error, we add one based on the status code.
+      if (!body.error) {
+        switch (response.status) {
+          case 401:
+            body.error = { type: 'UNAUTHORIZED' }
+            break
+          case 403:
+            body.error = { type: 'FORBIDDEN' }
+            break
+        }
+      }
+
       return body
     } catch (e: any) {
-      if (e.message.includes('ECONNREFUSED')) {
+      console.error(e.message)
+      if (
+        e.message.includes('ECONNREFUSED') ||
+        e.message.includes('Failed to fetch') ||
+        e.message.includes('ERR_CONNECTION_REFUSED')
+      ) {
         const error = new NetworkError('ECONNREFUSED')
         return { error, data: null }
       } else {

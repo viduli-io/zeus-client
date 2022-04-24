@@ -1,4 +1,4 @@
-interface ResultBase {
+export interface ResultBase {
   error: any
 }
 
@@ -42,6 +42,11 @@ export interface NonceResult extends ResultBase {
 export interface AuthUser {
   _id: string
   walletAddress?: string
+}
+
+export interface AuthData<T extends AuthUser> {
+  accessToken: string,
+  user: T
 }
 
 export interface AuthenticationResult<T extends AuthUser> extends ResultBase {
