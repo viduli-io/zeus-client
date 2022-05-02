@@ -11,6 +11,8 @@ export {
   UpdateManyResult,
   UpsertResult,
   DeleteManyResult,
+  Filter,
+  UpdateFilter
 } from './lib/types'
 
 export { ViduliClient }

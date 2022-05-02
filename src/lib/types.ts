@@ -1,3 +1,5 @@
+export type { Filter, UpdateFilter } from "mongodb"
+
 export interface ResultBase {
   error: any
 }
@@ -11,11 +13,11 @@ export interface CreateManyResult<TDoc> extends ResultBase {
 }
 
 export interface UpdateResult<TDoc> extends ResultBase {
-  meta: { matchedCount: number, modifiedCount: number }
+  data: TDoc
 }
 
-export interface UpdateManyResult<TDoc> extends UpdateResult<TDoc> {
-
+export interface UpdateManyResult<TDoc> extends ResultBase {
+  data: TDoc[]
 }
 
 export interface DeleteManyResult<TDoc> extends ResultBase {

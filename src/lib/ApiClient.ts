@@ -44,6 +44,11 @@ export class ApiClient implements IApiClient {
       })
       const body = await response.json()
 
+      if (body.error?.type === 'EXPIRED_TOKEN') {
+        // GET NEW TOKEN AND RETRY REQUEST
+
+      }
+
       // If the body does not contain an explicit error, we add one based on the status code.
       if (!body.error) {
         switch (response.status) {

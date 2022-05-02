@@ -1,21 +1,21 @@
-import type { Filter } from "mongodb"
+import type { Filter, UpdateFilter } from "mongodb"
 import type { IApiClient } from "./ApiClient"
 import { FindOneResult, FindResult, UpdateResult } from "./types"
 
 
 export class CollectionFilterBuilder<TDoc extends { _id: string }> implements PromiseLike<FindResult<TDoc>> {
-  protected  _skip: number | undefined
-  protected  _limit: number | undefined
+  protected _skip: number | undefined
+  protected _limit: number | undefined
 
   constructor(
     protected _client: IApiClient,
-    protected  _documentEndpoint: string,
-    protected  _filters: Filter<TDoc>
+    protected _documentEndpoint: string,
+    protected _filters: Filter<TDoc>
   ) {
   }
 
   public async findOne(filters: Filter<TDoc> = {}): Promise<FindOneResult<TDoc>> {
-    const { error, data  } = await this.find(filters)
+    const { error, data } = await this.find(filters)
     return { error, data: data[0] }
   }
 
@@ -26,12 +26,20 @@ export class CollectionFilterBuilder<TDoc extends { _id: string }> implements Pr
     return this._client.get<FindResult<TDoc>>(`${this._documentEndpoint}?${params}`)
   }
 
-  public async update(doc: Partial<TDoc>): Promise<UpdateResult<TDoc>>
-  public async update(filter: Filter<TDoc>, doc: Partial<TDoc>): Promise<UpdateResult<TDoc>>
-  public async update(filterOrDoc: Partial<TDoc> | Filter<TDoc>, doc?: Partial<TDoc>): Promise<UpdateResult<TDoc>> {
+  public async update(doc: UpdateFilter<TDoc>): Promise<UpdateResult<TDoc>>
+  public async update(filter: Filter<TDoc>, doc: UpdateFilter<TDoc>): Promise<UpdateResult<TDoc>>
+  public async update(filterOrDoc: Filter<TDoc> | UpdateFilter<TDoc>, doc?: UpdateFilter<TDoc>): Promise<UpdateResult<TDoc>> {
     if (doc) {
-      return this._client.patch(`${this._documentEndpoint}?filter=${JSON.stringify(filterOrDoc)}`, doc)
+      this._filters = { ...this._filters, ...filterOrDoc }
+      const params = this.getParams()
+
+      return this._client.patch(`${this._documentEndpoint}?${params}`, doc)
     } else {
+      if (Object.entries(this._filters).length > 0) {
+        const params = this.getParams()
+        return this._client.patch(`${this._documentEndpoint}?${params}`, filterOrDoc)
+      }
+
       const { _id, ...rest } = filterOrDoc
       return this._client.patch(`${this._documentEndpoint}/${_id}`, rest)
     }
