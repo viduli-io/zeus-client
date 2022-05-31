@@ -1,10 +1,16 @@
-import type { Filter, UpdateFilter } from "mongodb"
 import type { IApiClient } from "./ApiClient"
-import { ArrayOrObjectResult, FindOneResult, FindResult, UpdateResult } from "./types"
+import {
+  ArrayOrObjectResult,
+  Filter,
+  FindOneResult,
+  FindResult,
+  UpdateFilter,
+  UpdateResult
+} from "./types"
 import { toArrayOrObject } from "./utilities"
 
 
-export class CollectionFilterBuilder<TDoc extends { _id: string }> implements PromiseLike<FindResult<TDoc>> {
+export class CollectionFilterBuilder<TDoc extends { id: string }> implements PromiseLike<FindResult<TDoc>> {
   protected _skip: number | undefined
   protected _limit: number | undefined
 
@@ -47,8 +53,8 @@ export class CollectionFilterBuilder<TDoc extends { _id: string }> implements Pr
         return this._client.patch(`${this._documentEndpoint}?${params}`, filterOrDoc)
       }
 
-      const { _id, ...rest } = filterOrDoc
-      return this._client.patch(`${this._documentEndpoint}/${_id}`, rest)
+      const { id, ...rest } = filterOrDoc
+      return this._client.patch(`${this._documentEndpoint}/${id}`, rest)
     }
   }
 

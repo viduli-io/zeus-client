@@ -1,4 +1,4 @@
-export type { Filter, UpdateFilter } from "mongodb"
+export { Filter, UpdateFilter } from './mongodb-types'
 
 export interface ResultBase {
   error: any

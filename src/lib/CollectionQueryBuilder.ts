@@ -9,7 +9,7 @@ import {
   UpsertResult
 } from "./types"
 
-export class CollectionQueryBuilder<TDoc extends { _id: string }> extends CollectionFilterBuilder<TDoc> {
+export class CollectionQueryBuilder<TDoc extends { id: string }> extends CollectionFilterBuilder<TDoc> {
   private static readonly _collectionsUrl = '/collections/v1'
 
   constructor(
@@ -27,11 +27,11 @@ export class CollectionQueryBuilder<TDoc extends { _id: string }> extends Collec
     return this.get(id)
   }
 
-  public async create(doc: Omit<TDoc, '_id'>): Promise<CreateResult<TDoc>> {
+  public async create(doc: Omit<TDoc, 'id'>): Promise<CreateResult<TDoc>> {
     return this._client.post(this._documentEndpoint, doc)
   }
 
-  public async createMany(docs: Omit<TDoc, '_id'>[]): Promise<CreateManyResult<TDoc>> {
+  public async createMany(docs: Omit<TDoc, 'id'>[]): Promise<CreateManyResult<TDoc>> {
     return this._client.post(this._documentEndpoint, docs)
   }
 
@@ -40,8 +40,8 @@ export class CollectionQueryBuilder<TDoc extends { _id: string }> extends Collec
   }
 
   public async upsert(doc: Partial<TDoc>): Promise<UpsertResult<TDoc>> {
-    const { _id, ...rest } = doc
-    return this._client.put(`${this._documentEndpoint}/${_id}`, rest)
+    const { id, ...rest } = doc
+    return this._client.put(`${this._documentEndpoint}/${id}`, rest)
   }
 
   public async delete(id: string): Promise<{ error: any }> {
