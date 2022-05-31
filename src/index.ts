@@ -11,6 +11,7 @@ export {
   UpdateManyResult,
   UpsertResult,
   DeleteManyResult,
+  DistinctResult,
   Filter,
   UpdateFilter
 } from './lib/types'

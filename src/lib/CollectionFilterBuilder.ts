@@ -1,6 +1,7 @@
 import type { Filter, UpdateFilter } from "mongodb"
 import type { IApiClient } from "./ApiClient"
-import { FindOneResult, FindResult, UpdateResult } from "./types"
+import { ArrayOrObjectResult, FindOneResult, FindResult, UpdateResult } from "./types"
+import { toArrayOrObject } from "./utilities"
 
 
 export class CollectionFilterBuilder<TDoc extends { _id: string }> implements PromiseLike<FindResult<TDoc>> {
@@ -12,6 +13,12 @@ export class CollectionFilterBuilder<TDoc extends { _id: string }> implements Pr
     protected _documentEndpoint: string,
     protected _filters: Filter<TDoc>
   ) {
+  }
+
+  public async distinct<T = any>(key: string): Promise<ArrayOrObjectResult<T[]>> {
+    return toArrayOrObject(
+      await this._client.get(`${this._documentEndpoint}/distinct?key=${key}`)
+    )
   }
 
   public async findOne(filters: Filter<TDoc> = {}): Promise<FindOneResult<TDoc>> {

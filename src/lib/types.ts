@@ -36,6 +36,9 @@ export interface FindOneResult<TDoc> extends ResultBase {
   data: TDoc
 }
 
+export interface DistinctResult<T> extends ResultBase {
+  data: T[]
+}
 
 export interface NonceResult extends ResultBase {
   data: { nonce: string }
