@@ -36,7 +36,7 @@ export class CollectionQueryBuilder<TDoc extends { _id: string }> extends Collec
   }
 
   public async updateMany(docs: Partial<TDoc>[]): Promise<UpdateManyResult<TDoc>> {
-    return this._client.patch(`${this._documentEndpoint}`, docs)
+    return this._client.patch(`${this._documentEndpoint}/bulk`, docs)
   }
 
   public async upsert(doc: Partial<TDoc>): Promise<UpsertResult<TDoc>> {
