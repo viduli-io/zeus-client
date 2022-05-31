@@ -15,7 +15,7 @@ export class AuthenticationProviders {
 
   }
 
-  web3 = new Web3AuthProvider(this._apiClient)
+  web3 = new Web3AuthProvider(this._apiClient, this._session)
 
   public async getAccessToken() {
     const result = await this._apiClient.post<AccessTokenResult>(`/auth/v1/token/access`, {})

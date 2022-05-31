@@ -18,7 +18,7 @@ export default class ViduliClient {
     this.auth = new AuthenticationProviders(this.apiClient, this._session)
   }
 
-  public collection<T extends { _id: string }>(name: string): CollectionQueryBuilder<T> {
+  public collection<T extends { id: string }>(name: string): CollectionQueryBuilder<T> {
     return new CollectionQueryBuilder<T>(name, this.apiClient)
   }
 

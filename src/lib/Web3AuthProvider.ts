@@ -1,4 +1,5 @@
 import { ApiClient } from "./ApiClient"
+import { SessionContainer } from './SessionContainer'
 import {
   ArrayOrObjectResult,
   AuthData,
@@ -9,7 +10,7 @@ import {
 import { toArrayOrObject } from "./utilities"
 
 export class Web3AuthProvider {
-  constructor(private _apiClient: ApiClient) {
+  constructor(private _apiClient: ApiClient, private _session: SessionContainer) {
 
   }
 
@@ -18,11 +19,14 @@ export class Web3AuthProvider {
   }
 
   async authenticate<TUser extends AuthUser>(walletAddress: string, signature: string): Promise<ArrayOrObjectResult<AuthData<TUser>>> {
-    return toArrayOrObject(
-      await this._apiClient.post<AuthenticationResult<TUser>>(
-        `/auth/v1/web3/v1/authenticate`,
-        { walletAddress, signature }
-      )
+    const result = await this._apiClient.post<AuthenticationResult<TUser>>(
+      `/auth/v1/web3/v1/authenticate`,
+      { walletAddress, signature }
     )
+    if (result.data?.accessToken) {
+      this._session.accessToken = result.data.accessToken
+    }
+
+    return toArrayOrObject(result)
   }
 }
