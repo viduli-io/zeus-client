@@ -7,7 +7,7 @@
   "author": "https://github.com/avin-kavish",
   "private": false,
   "scripts": {
-    "build": "rimraf dist/main && tsc --project tsconfig.json",
+    "build": "rimraf ./dist && tsc --project tsconfig.json && tsc --project tsconfig.esm.json",
     "build:module": "rimraf dist/module && tsc --project tsconfig.esm.json",
     "test": "tap --node-arg=--require=ts-node/register",
     "test:dev": "tap --watch --node-arg=--require=ts-node/register"

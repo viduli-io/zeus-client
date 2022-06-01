@@ -3,7 +3,7 @@ import { CollectionFilterBuilder } from "./CollectionFilterBuilder"
 import {
   CreateManyResult,
   CreateResult,
-  DeleteManyResult,
+  DeleteManyResult, Filter,
   FindOneResult,
   UpdateManyResult,
   UpsertResult
@@ -48,7 +48,7 @@ export class CollectionQueryBuilder<TDoc extends { id: string }> extends Collect
     return this._client.delete(`${this._documentEndpoint}/${id}`)
   }
 
-  public async deleteMany(ids: string[]): Promise<DeleteManyResult<TDoc>> {
+  public async deleteMany(ids: string[] | Filter<TDoc>): Promise<DeleteManyResult<TDoc>> {
     return this._client.delete(this._documentEndpoint, ids)
   }
 }
