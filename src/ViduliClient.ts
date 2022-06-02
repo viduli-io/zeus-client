@@ -1,8 +1,9 @@
 import { ApiClient } from "./lib/ApiClient"
-import { RootAuthProvider } from "./lib/RootAuthProvider"
 import { CollectionQueryBuilder } from "./lib/CollectionQueryBuilder"
+import { RootAuthProvider } from "./lib/RootAuthProvider"
 import { SessionContainer } from "./lib/SessionContainer"
 import { AuthUser } from './lib/types'
+import { ObjectProvider } from './lib/ObjectProvider'
 
 export default class ViduliClient<TUser extends AuthUser = AuthUser> {
   private _endpoint = 'http://localhost:3000'
@@ -25,5 +26,9 @@ export default class ViduliClient<TUser extends AuthUser = AuthUser> {
 
   public setAuth(token: string) {
     this._session.accessToken = token
+  }
+
+  public get objects() {
+    return new ObjectProvider(this.apiClient)
   }
 }

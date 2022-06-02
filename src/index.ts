@@ -13,7 +13,10 @@ export {
   DeleteManyResult,
   DistinctResult,
   Filter,
-  UpdateFilter
+  UpdateFilter,
+  AuthUser
 } from './lib/types'
+
+export { ObjectDoc, ImageOptions } from './lib/ObjectProvider'
 
 export { ViduliClient }

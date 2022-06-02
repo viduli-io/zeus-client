@@ -4,9 +4,11 @@ import { SessionContainer } from "./SessionContainer"
 export class NetworkError extends Error {
 }
 
+type JSONValue = number | string | object | Array<any>
+
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
-  data?: any
+  data?: JSONValue | FormData
 }
 
 export interface IApiClient {
@@ -30,14 +32,18 @@ export class ApiClient implements IApiClient {
     data
   }: RequestOptions = {}): Promise<any> {
     const headers: Record<string, string> = {}
-    if (data)
+    if (data && !(data instanceof FormData))
       headers['Content-Type'] = 'application/json'
     if (this.session.accessToken)
       headers['Authorization'] = 'Bearer ' + this.session.accessToken
 
     try {
       const response = await fetch(this._baseUrl + url, {
-        body: JSON.stringify(data) ?? undefined,
+        body: data
+          ? data instanceof FormData
+            ? data
+            : JSON.stringify(data)
+          : undefined,
         method: method ?? 'GET',
         headers,
         credentials: 'include'
@@ -81,7 +87,7 @@ export class ApiClient implements IApiClient {
     return this.request(url, { method: 'GET' })
   }
 
-  async post<T>(url: string, data: any): Promise<T> {
+  async post<T>(url: string, data: JSONValue | FormData): Promise<T> {
     return this.request(url, { method: 'POST', data })
   }
 
