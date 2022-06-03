@@ -45,7 +45,7 @@ export interface NonceResult extends ResultBase {
 }
 
 export interface AuthUser {
-  _id: string
+  id: string
   walletAddress?: string
 }
 

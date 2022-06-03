@@ -19,4 +19,6 @@ export {
 
 export { ObjectDoc, ImageOptions } from './lib/ObjectProvider'
 
+export { ObjectId, EJSON } from 'bson'
+
 export { ViduliClient }

@@ -14,4 +14,9 @@ export class SessionContainer {
     const payload = this.payload
     return payload ? payload.exp : null
   }
+
+  clear() {
+    this.accessToken = null
+    this.refreshToken = null
+  }
 }

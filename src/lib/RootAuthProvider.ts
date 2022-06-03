@@ -42,6 +42,7 @@ export class RootAuthProvider<TUser extends AuthUser = AuthUser> {
 
   public async logout(): Promise<ArrayOrObjectResult<never>> {
     const result = await this._apiClient.delete<ResultBase>(`/auth/v1/session`)
+    this._session.clear()
     return toArrayOrObject(result)
   }
 }
