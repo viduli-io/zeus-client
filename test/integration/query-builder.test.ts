@@ -11,7 +11,8 @@ t.test('query builder', async t => {
   t.skip('`find()`: all fluent operators', async t => {
     const client = new ViduliClient()
 
-    const result = await client.collection('blogs')
+    const result = await client
+      .collection('blogs')
       .lt('age', 10)
       .gte('age', 5)
       .eq('title', 'Wonderful Title')

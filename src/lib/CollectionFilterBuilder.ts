@@ -3,17 +3,17 @@ import { CollectionQueryBuilder } from './CollectionQueryBuilder'
 import { Filter } from './mongodb-types'
 
 export class CollectionFilterBuilder<TDoc extends { id: string }> {
-  public eq = createOperator('$eq')
-  public ne = createOperator('$ne')
-  public gt = createOperator('$gt')
-  public gte = createOperator('$gte')
-  public lt = createOperator('$lt')
-  public lte = createOperator('$lte')
-  public in = createOperator<any[]>('$in')
-  public nin = createOperator<any[]>('$nin')
-  public exists = createOperator<boolean>('$exists')
-  public mod = createOperator<[ number, number ]>('$mod')
-  public regex = createOperator('$regex')
+  public eq = this.createOperator('$eq')
+  public ne = this.createOperator('$ne')
+  public gt = this.createOperator('$gt')
+  public gte = this.createOperator('$gte')
+  public lt = this.createOperator('$lt')
+  public lte = this.createOperator('$lte')
+  public in = this.createOperator<any[]>('$in')
+  public nin = this.createOperator<any[]>('$nin')
+  public exists = this.createOperator<boolean>('$exists')
+  public mod = this.createOperator<[ number, number ]>('$mod')
+  public regex = this.createOperator('$regex')
 
   constructor(
     protected _client: IApiClient,
@@ -41,15 +41,5 @@ export class CollectionFilterBuilder<TDoc extends { id: string }> {
         ...this._filters,
         [field]: { [op]: value },
       })
-  }
-}
-
-
-function createOperator<TValue = any, TOp extends string = string>(op: TOp) {
-  return function (this: CollectionQueryBuilder<any>, field: string, value: TValue) {
-    return new CollectionQueryBuilder(this._client, this._documentEndpoint, {
-      ...this._filters,
-      [field]: { [op]: value },
-    })
   }
 }

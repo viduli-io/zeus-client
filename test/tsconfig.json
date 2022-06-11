@@ -1,0 +1,21 @@
+{
+  "include": ["./"],
+  "exclude": ["node_modules/**/*.ts"],
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": true,
+    "module": "CommonJS",
+    "rootDir": "./",
+    "sourceMap": true,
+    "target": "ES2015",
+    "noEmit": true,
+    "strict": true,
+
+    "esModuleInterop": true,
+    "moduleResolution": "Node",
+
+    "forceConsistentCasingInFileNames": true,
+    "stripInternal": true,
+    "allowSyntheticDefaultImports": true
+  }
+}
