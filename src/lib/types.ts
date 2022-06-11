@@ -1,3 +1,5 @@
+import { SortDirection } from './mongodb-types'
+
 export { Filter, UpdateFilter } from './mongodb-types'
 
 export interface ResultBase {
@@ -65,3 +67,14 @@ export interface AccessTokenResult extends ResultBase {
 export type ArrayOrObjectResult<T> =
   ([ Error, null ] | [ null, T ])
   & { error: Error, data: T }
+
+export type Projection =  { [key: string]: 1 | 0 | true | false }
+
+export type SimpleSort =  { [key: string]: SortDirection }
+
+export interface FindOptions<TDoc> {
+  project?: Projection,
+  sort?: SimpleSort
+  skip?: number
+  limit?: number
+}

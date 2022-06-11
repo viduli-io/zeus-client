@@ -1,5 +1,5 @@
 import t from "tap"
-import { CollectionQueryBuilder } from "../src/lib/CollectionQueryBuilder"
+import { CollectionRootQueryBuilder } from "../src/lib/CollectionRootQueryBuilder"
 import ViduliClient from "../src/ViduliClient"
 
 t.test('ViduliClient', async () => {
@@ -14,7 +14,7 @@ t.test('ViduliClient', async () => {
     const client = new ViduliClient()
     const builder = client.collection('collection')
 
-    t.ok(builder instanceof CollectionQueryBuilder)
+    t.ok(builder instanceof CollectionRootQueryBuilder)
   })
 
   t.test('sets token', async () => {

@@ -1,5 +1,5 @@
-import fetch from "isomorphic-unfetch"
-import { SessionContainer } from "./SessionContainer"
+import fetch from 'isomorphic-unfetch'
+import { SessionContainer } from './SessionContainer'
 
 export class NetworkError extends Error {
 }
@@ -24,7 +24,14 @@ export interface IApiClient {
 }
 
 export class ApiClient implements IApiClient {
+  formData: typeof FormData
+
   constructor(private session: SessionContainer, private _baseUrl: string = '') {
+    if (typeof FormData === 'undefined') {
+      this.formData = require('form-data')
+    } else {
+      this.formData = FormData
+    }
   }
 
   async request(url: string, {
@@ -32,7 +39,7 @@ export class ApiClient implements IApiClient {
     data
   }: RequestOptions = {}): Promise<any> {
     const headers: Record<string, string> = {}
-    if (data && !(data instanceof FormData))
+    if (data && !(data instanceof this.formData))
       headers['Content-Type'] = 'application/json'
     if (this.session.accessToken)
       headers['Authorization'] = 'Bearer ' + this.session.accessToken
@@ -40,7 +47,7 @@ export class ApiClient implements IApiClient {
     try {
       const response = await fetch(this._baseUrl + url, {
         body: data
-          ? data instanceof FormData
+          ? data instanceof this.formData
             ? data
             : JSON.stringify(data)
           : undefined,

@@ -1,54 +1,176 @@
-import { IApiClient } from "./ApiClient"
-import { CollectionFilterBuilder } from "./CollectionFilterBuilder"
+import type { IApiClient } from './ApiClient'
+import { CollectionFilterBuilder } from './CollectionFilterBuilder'
+import { Sort } from './mongodb-types'
 import {
-  CreateManyResult,
-  CreateResult,
-  DeleteManyResult, Filter,
+  ArrayOrObjectResult,
+  Filter,
   FindOneResult,
-  UpdateManyResult,
-  UpsertResult
-} from "./types"
+  FindOptions,
+  FindResult,
+  Projection,
+  UpdateFilter,
+  UpdateResult,
+} from './types'
+import { toArrayOrObject } from './utilities'
 
 export class CollectionQueryBuilder<TDoc extends { id: string }> extends CollectionFilterBuilder<TDoc> {
-  private static readonly _collectionsUrl = '/collections/v1'
+  protected _skip: number | undefined
+  protected _limit: number | undefined
+  protected _project: Projection | undefined
+  protected _sort: Sort | undefined
 
   constructor(
-    collectionName: string,
     _client: IApiClient,
+    _documentEndpoint: string,
+    _filters: Filter<TDoc>
   ) {
-    super(_client, `${CollectionQueryBuilder._collectionsUrl}/${collectionName}/documents`, {})
+    super(_client, _documentEndpoint, _filters as any)
   }
 
-  public async get(id: string): Promise<FindOneResult<TDoc>> {
-    return this._client.get(`${this._documentEndpoint}/${id}`)
+  public async distinct<T = any>(
+    key: string
+  ): Promise<ArrayOrObjectResult<T[]>> {
+    return toArrayOrObject(
+      await this._client.get(`${this._documentEndpoint}/distinct?key=${key}`)
+    )
   }
 
-  public async findById(id: string): Promise<FindOneResult<TDoc>> {
-    return this.get(id)
+  public async findOne(
+    filters: Filter<TDoc> = {}
+  ): Promise<FindOneResult<TDoc>> {
+    const { error, data } = await this.find(filters, { limit: 2 })
+    return { error, data: data[0] }
   }
 
-  public async create(doc: Omit<TDoc, 'id'>): Promise<CreateResult<TDoc>> {
-    return this._client.post(this._documentEndpoint, doc)
+  public find(
+    filters: Filter<TDoc> = {},
+    options: FindOptions<TDoc> = {}
+  ): Promise<FindResult<TDoc>> {
+    this._filters = { ...this._filters, ...filters }
+    this._skip = options.skip ?? this._skip
+    this._limit = options.limit ?? this._limit
+    this._project = options.project ?? this._project
+    this._sort = options.sort ?? this._sort
+
+    const params = this.getParams()
+
+    return this._client.get<FindResult<TDoc>>(
+      `${this._documentEndpoint}?${params}`
+    )
   }
 
-  public async createMany(docs: Omit<TDoc, 'id'>[]): Promise<CreateManyResult<TDoc>> {
-    return this._client.post(this._documentEndpoint, docs)
+  public async update(doc: UpdateFilter<TDoc>): Promise<UpdateResult<TDoc>>
+  public async update(
+    filter: Filter<TDoc>,
+    doc: UpdateFilter<TDoc>
+  ): Promise<UpdateResult<TDoc>>
+  public async update(
+    filterOrDoc: Filter<TDoc> | UpdateFilter<TDoc>,
+    doc?: UpdateFilter<TDoc>
+  ): Promise<UpdateResult<TDoc>> {
+    if (doc) {
+      this._filters = { ...this._filters, ...filterOrDoc }
+      const params = this.getParams()
+
+      return this._client.patch(`${this._documentEndpoint}?${params}`, doc)
+    } else {
+      if (Object.entries(this._filters).length > 0) {
+        const params = this.getParams()
+        return this._client.patch(
+          `${this._documentEndpoint}?${params}`,
+          filterOrDoc
+        )
+      }
+
+      const { id, ...rest } = filterOrDoc
+      return this._client.patch(`${this._documentEndpoint}/${id}`, rest)
+    }
   }
 
-  public async updateMany(docs: Partial<TDoc>[]): Promise<UpdateManyResult<TDoc>> {
-    return this._client.patch(`${this._documentEndpoint}/bulk`, docs)
+  // $geoWithin?: Document;
+  // $near?: Document;
+  // $nearSphere?: Document;
+
+  or(
+    action: (
+      builder: CollectionFilterBuilder<TDoc>
+    ) => CollectionFilterBuilder<TDoc>
+  ) {
+    const result = action(
+      new CollectionFilterBuilder<TDoc>(
+        this._client,
+        this._documentEndpoint,
+        {}
+      )
+    )
+
+    const filters = this._filters
+
+    return new CollectionQueryBuilder(
+      this._client,
+      this._documentEndpoint,
+      {
+        $or: [
+          ...(
+            Object.keys(filters).length > 0
+              ? [ filters ]
+              : []
+          ),
+          result.filters
+        ]
+      }
+    )
   }
 
-  public async upsert(doc: Partial<TDoc>): Promise<UpsertResult<TDoc>> {
-    const { id, ...rest } = doc
-    return this._client.put(`${this._documentEndpoint}/${id}`, rest)
+  and(
+    action: (
+      builder: CollectionFilterBuilder<TDoc>
+    ) => CollectionFilterBuilder<TDoc>
+  ) {
+    const result = action(
+      new CollectionFilterBuilder<TDoc>(
+        this._client,
+        this._documentEndpoint,
+        {}
+      )
+    )
+
+    const filters = this._filters
+
+    return new CollectionQueryBuilder(
+      this._client,
+      this._documentEndpoint,
+      {
+        $and: [
+          ...(
+            Object.keys(filters).length > 0
+              ? [ filters ]
+              : []
+          ),
+          result.filters
+        ]
+      }
+    )
   }
 
-  public async delete(id: string): Promise<{ error: any }> {
-    return this._client.delete(`${this._documentEndpoint}/${id}`)
+  public skip(count: number) {
+    this._skip = count
+    return this
   }
 
-  public async deleteMany(ids: string[] | Filter<TDoc>): Promise<DeleteManyResult<TDoc>> {
-    return this._client.delete(this._documentEndpoint, ids)
+  public limit(count: number) {
+    this._limit = count
+    return this
+  }
+
+  protected getParams() {
+    const params = new URLSearchParams({
+      filter: JSON.stringify(this._filters),
+    })
+
+    if (this._skip) params.set('skip', String(this._skip))
+    if (this._limit) params.set('limit', String(this._limit))
+
+    return params
   }
 }

@@ -1,12 +1,12 @@
 import t from 'tap'
-import { CollectionFilterBuilder } from "../src/lib/CollectionFilterBuilder"
+import { CollectionQueryBuilder } from "../src/lib/CollectionQueryBuilder"
 import { MockApiClient } from "./MockApiClient"
 
 const testDollarFilter = (filter: string, value: any = 'value') => {
   t.test(`applies ${filter}`, async () => {
     const client = new MockApiClient()
 
-    const builder = new CollectionFilterBuilder(
+    const builder = new CollectionQueryBuilder(
       client,
       '',
       {}
@@ -21,7 +21,7 @@ const testDollarFilter = (filter: string, value: any = 'value') => {
 
 t.test('applies default filter', async () => {
   const client = new MockApiClient()
-  const builder = new CollectionFilterBuilder(client, '', {})
+  const builder = new CollectionQueryBuilder(client, '', {})
 
   await builder
 
@@ -38,7 +38,7 @@ testDollarFilter('mod', [ 5, 2 ])
 
 t.test('applies geo intersects filter', async () => {
   const client = new MockApiClient()
-  const builder = new CollectionFilterBuilder(client, '', {})
+  const builder = new CollectionQueryBuilder(client, '', {})
 
   await builder.geoIntersects('location', { type: 'Geometry' })
 
@@ -51,7 +51,7 @@ t.test('applies geo intersects filter', async () => {
 
 t.test('applies skip', async () => {
   const client = new MockApiClient()
-  const builder = new CollectionFilterBuilder(client, '', {})
+  const builder = new CollectionQueryBuilder(client, '', {})
 
   await builder.skip(100)
 
@@ -60,7 +60,7 @@ t.test('applies skip', async () => {
 
 t.test('applies limit', async () => {
   const client = new MockApiClient()
-  const builder = new CollectionFilterBuilder(client, '', {})
+  const builder = new CollectionQueryBuilder(client, '', {})
 
   await builder.limit(100)
 

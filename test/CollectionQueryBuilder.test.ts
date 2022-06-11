@@ -1,5 +1,5 @@
 import t from "tap"
-import type { CollectionQueryBuilder as CollectionQueryBuilderType } from "../src/lib/CollectionQueryBuilder"
+import type { CollectionRootQueryBuilder as CollectionQueryBuilderType } from "../src/lib/CollectionRootQueryBuilder"
 import { MockApiClient } from "./MockApiClient"
 
 const callStack = {
