@@ -1,21 +1,22 @@
 import t from 'tap'
-import { CollectionQueryBuilder } from "../src/lib/CollectionQueryBuilder"
-import { MockApiClient } from "./MockApiClient"
+import { CollectionQueryBuilder } from '../../src/lib/collections/CollectionQueryBuilder'
+import { MockApiClient } from '../MockApiClient'
 
 const testDollarFilter = (filter: string, value: any = 'value') => {
   t.test(`applies ${filter}`, async () => {
     const client = new MockApiClient()
 
-    const builder = new CollectionQueryBuilder(
-      client,
-      '',
-      {}
-    )
+    const builder = new CollectionQueryBuilder(client, '', {})
 
     // @ts-ignore
     await builder[filter]('field', value)
 
-    t.same(client.callStack[0][1], `?filter=${encodeURIComponent(JSON.stringify({ field: { [`$${filter}`]: value } }))}`)
+    t.same(
+      client.callStack[0][1],
+      `?filter=${encodeURIComponent(
+        JSON.stringify({ field: { [`$${filter}`]: value } })
+      )}`
+    )
   })
 }
 
@@ -27,14 +28,13 @@ t.test('applies default filter', async () => {
 
   t.same(client.callStack[0][1], `?filter=${encodeURIComponent('{}')}`)
 })
-
-;[ 'eq', 'gt', 'gte', 'lt', 'lte', 'ne', 'in', 'nin', 'regex' ].forEach(op => {
+;['eq', 'gt', 'gte', 'lt', 'lte', 'ne', 'in', 'nin', 'regex'].forEach(op => {
   testDollarFilter(op)
 })
 
 testDollarFilter('exists', true)
 
-testDollarFilter('mod', [ 5, 2 ])
+testDollarFilter('mod', [5, 2])
 
 t.test('applies geo intersects filter', async () => {
   const client = new MockApiClient()
@@ -42,11 +42,14 @@ t.test('applies geo intersects filter', async () => {
 
   await builder.geoIntersects('location', { type: 'Geometry' })
 
-  t.same(client.callStack[0][1], `?filter=${
-    encodeURIComponent(JSON.stringify({
-      location: { $geoIntersects: { $geometry: { type: 'Geometry' } } }
-    }))
-  }`)
+  t.same(
+    client.callStack[0][1],
+    `?filter=${encodeURIComponent(
+      JSON.stringify({
+        location: { $geoIntersects: { $geometry: { type: 'Geometry' } } },
+      })
+    )}`
+  )
 })
 
 t.test('applies skip', async () => {
@@ -64,5 +67,8 @@ t.test('applies limit', async () => {
 
   await builder.limit(100)
 
-  t.same(client.callStack[0][1], `?filter=${encodeURIComponent('{}')}&limit=100`)
+  t.same(
+    client.callStack[0][1],
+    `?filter=${encodeURIComponent('{}')}&limit=100`
+  )
 })

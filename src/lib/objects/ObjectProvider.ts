@@ -1,6 +1,6 @@
-import { ApiClient } from './ApiClient'
-import { ArrayOrObjectResult } from './types'
-import { toArrayOrObject } from './util'
+import { ApiClient } from '../ApiClient'
+import { ArrayOrObjectResult } from '../types'
+import { toArrayOrObject } from '../util'
 
 export interface ImageOptions {}
 

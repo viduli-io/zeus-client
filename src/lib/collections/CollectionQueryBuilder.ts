@@ -1,6 +1,6 @@
-import type { IApiClient } from './ApiClient'
+import type { IApiClient } from '../ApiClient'
 import { CollectionFilterBuilder } from './CollectionFilterBuilder'
-import { Sort } from './mongodb-types'
+import { Sort } from '../mongodb-types'
 import {
   ArrayOrObjectResult,
   Filter,
@@ -10,8 +10,8 @@ import {
   Projection,
   UpdateFilter,
   UpdateResult,
-} from './types'
-import { toArrayOrObject } from './util'
+} from '../types'
+import { toArrayOrObject } from '../util'
 
 export class CollectionQueryBuilder<
   TDoc extends { id: string }

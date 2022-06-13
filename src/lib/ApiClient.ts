@@ -1,8 +1,7 @@
 import fetch from 'isomorphic-unfetch'
-import { SessionContainer } from './SessionContainer'
+import { SessionContainer } from './auth/SessionContainer'
 
-export class NetworkError extends Error {
-}
+export class NetworkError extends Error {}
 
 type JSONValue = number | string | object | Array<any>
 
@@ -26,7 +25,10 @@ export interface IApiClient {
 export class ApiClient implements IApiClient {
   formData: typeof FormData
 
-  constructor(private session: SessionContainer, private _baseUrl: string = '') {
+  constructor(
+    private session: SessionContainer,
+    private _baseUrl: string = ''
+  ) {
     if (typeof FormData === 'undefined') {
       this.formData = require('form-data')
     } else {
@@ -34,10 +36,10 @@ export class ApiClient implements IApiClient {
     }
   }
 
-  async request(url: string, {
-    method,
-    data
-  }: RequestOptions = {}): Promise<any> {
+  async request(
+    url: string,
+    { method, data }: RequestOptions = {}
+  ): Promise<any> {
     const headers: Record<string, string> = {}
     if (data && !(data instanceof this.formData))
       headers['Content-Type'] = 'application/json'
@@ -53,13 +55,12 @@ export class ApiClient implements IApiClient {
           : undefined,
         method: method ?? 'GET',
         headers,
-        credentials: 'include'
+        credentials: 'include',
       })
       const body = await response.json()
 
       if (body.error?.type === 'EXPIRED_TOKEN') {
         // GET NEW TOKEN AND RETRY REQUEST
-
       }
 
       // If the body does not contain an explicit error, we add one based on the status code.

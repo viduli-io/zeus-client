@@ -14,10 +14,10 @@ export {
   DistinctResult,
   Filter,
   UpdateFilter,
-  AuthUser
+  AuthUser,
 } from './lib/types'
 
-export { ObjectDoc, ImageOptions } from './lib/ObjectProvider'
+export { ObjectDoc, ImageOptions } from './lib/objects/ObjectProvider'
 
 export { ObjectId, EJSON } from 'bson'
 

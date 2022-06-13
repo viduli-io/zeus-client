@@ -1,4 +1,4 @@
-import { ApiClient } from './ApiClient'
+import { ApiClient } from '../ApiClient'
 import { SessionContainer } from './SessionContainer'
 import {
   AccessTokenResult,
@@ -7,8 +7,8 @@ import {
   AuthUser,
   FindOneResult,
   ResultBase,
-} from './types'
-import { toArrayOrObject } from './util'
+} from '../types'
+import { toArrayOrObject } from '../util'
 import { Web3AuthProvider } from './Web3AuthProvider'
 
 export class RootAuthProvider<TUser extends AuthUser = AuthUser> {

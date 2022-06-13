@@ -1,4 +1,4 @@
-import { ApiClient } from './ApiClient'
+import { ApiClient } from '../ApiClient'
 import { SessionContainer } from './SessionContainer'
 import {
   ArrayOrObjectResult,
@@ -6,8 +6,8 @@ import {
   AuthenticationResult,
   AuthUser,
   NonceResult,
-} from './types'
-import { toArrayOrObject } from './util'
+} from '../types'
+import { toArrayOrObject } from '../util'
 
 export class Web3AuthProvider {
   constructor(

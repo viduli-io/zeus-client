@@ -1,8 +1,8 @@
 import { ApiClient } from './lib/ApiClient'
-import { CollectionRootQueryBuilder } from './lib/CollectionRootQueryBuilder'
-import { ObjectProvider } from './lib/ObjectProvider'
-import { RootAuthProvider } from './lib/RootAuthProvider'
-import { SessionContainer } from './lib/SessionContainer'
+import { CollectionRootQueryBuilder } from './lib/collections/CollectionRootQueryBuilder'
+import { ObjectProvider } from './lib/objects/ObjectProvider'
+import { RootAuthProvider } from './lib/auth/RootAuthProvider'
+import { SessionContainer } from './lib/auth/SessionContainer'
 import { AuthUser, CollectionTypeMap } from './lib/types'
 
 export default class ViduliClient<TUser extends AuthUser = AuthUser> {
@@ -23,7 +23,10 @@ export default class ViduliClient<TUser extends AuthUser = AuthUser> {
     return new ObjectProvider(this.apiClient)
   }
 
-  public collection<T extends { id: string }, TCollectionId extends string>(
+  public collection<
+    T extends { id: string },
+    TCollectionId extends string = string
+  >(
     name: TCollectionId
   ): CollectionRootQueryBuilder<
     TCollectionId extends keyof CollectionTypeMap

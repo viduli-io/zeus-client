@@ -1,7 +1,6 @@
-import jwtDecode, { JwtPayload } from "jwt-decode"
+import jwtDecode, { JwtPayload } from 'jwt-decode'
 
 export class SessionContainer {
-
   refreshToken: string | null = null
 
   accessToken: string | null = null

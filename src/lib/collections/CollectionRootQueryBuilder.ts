@@ -1,4 +1,4 @@
-import { IApiClient } from './ApiClient'
+import { IApiClient } from '../ApiClient'
 import { CollectionQueryBuilder } from './CollectionQueryBuilder'
 import {
   CreateManyResult,
@@ -8,7 +8,7 @@ import {
   FindOneResult,
   UpdateManyResult,
   UpsertResult,
-} from './types'
+} from '../types'
 
 export class CollectionRootQueryBuilder<
   TDoc extends { id: string }

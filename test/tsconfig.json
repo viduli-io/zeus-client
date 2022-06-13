@@ -5,7 +5,7 @@
     "declaration": true,
     "declarationMap": true,
     "module": "CommonJS",
-    "rootDir": "./",
+    "rootDir": "../",
     "sourceMap": true,
     "target": "ES2015",
     "noEmit": true,

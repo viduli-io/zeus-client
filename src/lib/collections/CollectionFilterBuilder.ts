@@ -1,7 +1,7 @@
-import { IApiClient } from './ApiClient'
+import { IApiClient } from '../ApiClient'
 import { CollectionQueryBuilder } from './CollectionQueryBuilder'
-import { Filter, PropertyType } from './mongodb-types'
-import { NestedKey } from './types'
+import { Filter, PropertyType } from '../mongodb-types'
+import { NestedKey } from '../types'
 
 export class CollectionFilterBuilder<TDoc extends { id: string }> {
   constructor(

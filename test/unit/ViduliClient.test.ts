@@ -1,9 +1,8 @@
-import t from "tap"
-import { CollectionRootQueryBuilder } from "../src/lib/CollectionRootQueryBuilder"
-import ViduliClient from "../src/ViduliClient"
+import t from 'tap'
+import { CollectionRootQueryBuilder } from '../../src/lib/collections/CollectionRootQueryBuilder'
+import ViduliClient from '../../src/ViduliClient'
 
 t.test('ViduliClient', async () => {
-
   t.test('it instantiates', async () => {
     const client = new ViduliClient('https://xxxxx.mango.io/')
 
