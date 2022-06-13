@@ -1,4 +1,4 @@
-import { SortDirection } from './mongodb-types'
+import { Join, NestedPaths, SortDirection } from './mongodb-types'
 
 export { Filter, UpdateFilter } from './mongodb-types'
 
@@ -52,29 +52,34 @@ export interface AuthUser {
 }
 
 export interface AuthData<T extends AuthUser> {
-  accessToken: string,
+  accessToken: string
   user: T
 }
 
 export interface AuthenticationResult<T extends AuthUser> extends ResultBase {
-  data: { accessToken: string, user: T }
+  data: { accessToken: string; user: T }
 }
 
 export interface AccessTokenResult extends ResultBase {
   data: { accessToken: string }
 }
 
-export type ArrayOrObjectResult<T> =
-  ([ Error, null ] | [ null, T ])
-  & { error: Error, data: T }
+export type ArrayOrObjectResult<T> = ([Error, null] | [null, T]) & {
+  error: Error
+  data: T
+}
 
-export type Projection =  { [key: string]: 1 | 0 | true | false }
+export type NestedKey<T> = Join<NestedPaths<T>, '.'>
 
-export type SimpleSort =  { [key: string]: SortDirection }
+export type Projection = { [key: string]: 1 | 0 | true | false }
+
+export type SimpleSort = { [key: string]: SortDirection }
 
 export interface FindOptions<TDoc> {
-  project?: Projection,
+  project?: Projection
   sort?: SimpleSort
   skip?: number
   limit?: number
 }
+
+export interface CollectionTypeMap {}

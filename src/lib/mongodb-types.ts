@@ -39,14 +39,7 @@ export type OnlyFieldsOfType<
     Record<string, AssignableType>
 >
 
-export type SortDirection =
-  | 1
-  | -1
-  | 'asc'
-  | 'desc'
-  | 'ascending'
-  | 'descending'
-  | { $meta: string }
+export type SortDirection = 1 | -1 | 'asc' | 'desc' | 'ascending' | 'descending'
 
 export type Sort =
   | string

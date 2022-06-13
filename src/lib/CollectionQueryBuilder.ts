@@ -13,7 +13,9 @@ import {
 } from './types'
 import { toArrayOrObject } from './utilities'
 
-export class CollectionQueryBuilder<TDoc extends { id: string }> extends CollectionFilterBuilder<TDoc> {
+export class CollectionQueryBuilder<
+  TDoc extends { id: string }
+> extends CollectionFilterBuilder<TDoc> {
   protected _skip: number | undefined
   protected _limit: number | undefined
   protected _project: Projection | undefined
@@ -37,9 +39,9 @@ export class CollectionQueryBuilder<TDoc extends { id: string }> extends Collect
 
   public async findOne(
     filters: Filter<TDoc> = {}
-  ): Promise<FindOneResult<TDoc>> {
+  ): Promise<FindOneResult<TDoc | null>> {
     const { error, data } = await this.find(filters, { limit: 2 })
-    return { error, data: data[0] }
+    return { error, data: error ? null : data[0] }
   }
 
   public find(
@@ -106,20 +108,12 @@ export class CollectionQueryBuilder<TDoc extends { id: string }> extends Collect
 
     const filters = this._filters
 
-    return new CollectionQueryBuilder(
-      this._client,
-      this._documentEndpoint,
-      {
-        $or: [
-          ...(
-            Object.keys(filters).length > 0
-              ? [ filters ]
-              : []
-          ),
-          result.filters
-        ]
-      }
-    )
+    return new CollectionQueryBuilder(this._client, this._documentEndpoint, {
+      $or: [
+        ...(Object.keys(filters).length > 0 ? [filters] : []),
+        result.filters,
+      ],
+    })
   }
 
   and(
@@ -137,20 +131,12 @@ export class CollectionQueryBuilder<TDoc extends { id: string }> extends Collect
 
     const filters = this._filters
 
-    return new CollectionQueryBuilder(
-      this._client,
-      this._documentEndpoint,
-      {
-        $and: [
-          ...(
-            Object.keys(filters).length > 0
-              ? [ filters ]
-              : []
-          ),
-          result.filters
-        ]
-      }
-    )
+    return new CollectionQueryBuilder(this._client, this._documentEndpoint, {
+      $and: [
+        ...(Object.keys(filters).length > 0 ? [filters] : []),
+        result.filters,
+      ],
+    })
   }
 
   public skip(count: number) {

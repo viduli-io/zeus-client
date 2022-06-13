@@ -1,29 +1,127 @@
 import { IApiClient } from './ApiClient'
 import { CollectionQueryBuilder } from './CollectionQueryBuilder'
-import { Filter } from './mongodb-types'
+import { Filter, PropertyType } from './mongodb-types'
+import { NestedKey } from './types'
 
 export class CollectionFilterBuilder<TDoc extends { id: string }> {
-  public eq = this.createOperator('$eq')
-  public ne = this.createOperator('$ne')
-  public gt = this.createOperator('$gt')
-  public gte = this.createOperator('$gte')
-  public lt = this.createOperator('$lt')
-  public lte = this.createOperator('$lte')
-  public in = this.createOperator<any[]>('$in')
-  public nin = this.createOperator<any[]>('$nin')
-  public exists = this.createOperator<boolean>('$exists')
-  public mod = this.createOperator<[ number, number ]>('$mod')
-  public regex = this.createOperator('$regex')
-
   constructor(
     protected _client: IApiClient,
     protected _documentEndpoint: string,
     protected _filters: Filter<TDoc>
-  ) {
-  }
+  ) {}
 
   get filters() {
     return this._filters
+  }
+
+  public eq<Key extends NestedKey<TDoc>>(
+    field: Key,
+    value: PropertyType<TDoc, Key>
+  ) {
+    return new CollectionQueryBuilder(this._client, this._documentEndpoint, {
+      ...this._filters,
+      [field]: { $eq: value },
+    })
+  }
+
+  public ne<Key extends NestedKey<TDoc>>(
+    field: Key,
+    value: PropertyType<TDoc, Key>
+  ) {
+    return new CollectionQueryBuilder(this._client, this._documentEndpoint, {
+      ...this._filters,
+      [field]: { $ne: value },
+    })
+  }
+
+  public gt<Key extends NestedKey<TDoc>>(
+    field: Key,
+    value: PropertyType<TDoc, Key>
+  ) {
+    return new CollectionQueryBuilder(this._client, this._documentEndpoint, {
+      ...this._filters,
+      [field]: { $gt: value },
+    })
+  }
+
+  public gte<Key extends NestedKey<TDoc>>(
+    field: Key,
+    value: PropertyType<TDoc, Key>
+  ) {
+    return new CollectionQueryBuilder(this._client, this._documentEndpoint, {
+      ...this._filters,
+      [field]: { $gte: value },
+    })
+  }
+
+  public lt<Key extends NestedKey<TDoc>>(
+    field: Key,
+    value: PropertyType<TDoc, Key>
+  ) {
+    return new CollectionQueryBuilder(this._client, this._documentEndpoint, {
+      ...this._filters,
+      [field]: { $lt: value },
+    })
+  }
+
+  public lte<Key extends NestedKey<TDoc>>(
+    field: Key,
+    value: PropertyType<TDoc, Key>
+  ) {
+    return new CollectionQueryBuilder(this._client, this._documentEndpoint, {
+      ...this._filters,
+      [field]: { $lte: value },
+    })
+  }
+
+  public in<Key extends NestedKey<TDoc>>(
+    field: Key,
+    value: PropertyType<TDoc, Key>
+  ) {
+    return new CollectionQueryBuilder(this._client, this._documentEndpoint, {
+      ...this._filters,
+      [field]: { $in: value },
+    })
+  }
+
+  public nin<Key extends NestedKey<TDoc>>(
+    field: Key,
+    value: PropertyType<TDoc, Key>
+  ) {
+    return new CollectionQueryBuilder(this._client, this._documentEndpoint, {
+      ...this._filters,
+      [field]: { $nin: value },
+    })
+  }
+
+  public exists<Key extends NestedKey<TDoc>>(
+    field: Key,
+    value: PropertyType<TDoc, Key>
+  ) {
+    return new CollectionQueryBuilder(this._client, this._documentEndpoint, {
+      ...this._filters,
+      [field]: { $exists: value },
+    })
+  }
+
+  public mod<Key extends NestedKey<TDoc>>(
+    field: Key,
+    value: PropertyType<TDoc, Key>
+  ) {
+    return new CollectionQueryBuilder(this._client, this._documentEndpoint, {
+      ...this._filters,
+      [field]: { $mod: value },
+    })
+  }
+
+  public regex<Key extends NestedKey<TDoc>>(
+    field: Key,
+    value: PropertyType<TDoc, Key>
+  ) {
+    return new CollectionQueryBuilder(this._client, this._documentEndpoint, {
+      ...this._filters,
+      [field]: { $regex: value },
+    })
   }
 
   public geoIntersects(field: string, $geometry: any) {
@@ -33,13 +131,5 @@ export class CollectionFilterBuilder<TDoc extends { id: string }> {
         $geoIntersects: { $geometry },
       },
     })
-  }
-
-  private createOperator<TValue = any, TOp extends string = string>(op: TOp) {
-    return (field: string, value: TValue) =>
-      new CollectionQueryBuilder(this._client, this._documentEndpoint, {
-        ...this._filters,
-        [field]: { [op]: value },
-      })
   }
 }

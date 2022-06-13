@@ -5,18 +5,16 @@ const nock = require('nock')
 
 const scope = nock('http://localhost:4000')
 
-
 t.test('query builder', async t => {
-
   t.skip('`find()`: all fluent operators', async t => {
     const client = new ViduliClient()
 
     const result = await client
-      .collection('blogs')
+      .collection('people')
       .lt('age', 10)
       .gte('age', 5)
-      .eq('title', 'Wonderful Title')
-      .find()
+      .eq('bright.bart', 'Wonderful Title')
+      .find({})
 
     console.log(result)
   })
@@ -41,44 +39,36 @@ t.test('query builder', async t => {
         )
 
         t.same(filter, {
-          '$and': [
+          $and: [
             {
-              '$or': [
+              $or: [
                 {
-                  '$or': [ { gender: { '$eq': 'male' }, age: { '$lte': 10 } } ]
+                  $or: [{ gender: { $eq: 'male' }, age: { $lte: 10 } }],
                 },
-                { gender: { '$eq': 'female' }, age: { '$gt': 25 } }
-              ]
+                { gender: { $eq: 'female' }, age: { $gt: 25 } },
+              ],
             },
-            { city: { '$eq': 'colombo' } }
-          ]
+            { city: { $eq: 'colombo' } },
+          ],
         })
 
-        return [ 200, { error: null, body: [ { x: 1 } ] } ]
+        return [200, { error: null, body: [{ x: 1 }] }]
       })
 
     const client = new ViduliClient()
     const result = await client
       .collection('people')
-      .or(_ => _
-        .eq('gender', 'male')
-        .lte('age', 10)
-      )
-      .or(_ => _
-        .eq('gender', 'female')
-        .gt('age', 25)
-      )
-      .and(_ =>  _
-        .eq('city', 'colombo')
-      )
+      .or(_ => _.eq('gender', 'male').lte('age', 10))
+      .or(_ => _.eq('gender', 'female').gt('age', 25))
+      .and(_ => _.eq('city', 'colombo'))
       .find()
 
-    t.same(result, { error: null, body: [ { x: 1 } ] })
+    t.same(result, { error: null, body: [{ x: 1 }] })
   })
 })
 
 t.skip('`auth.getUser()`', async t => {
   const client = new ViduliClient()
 
-  const [ err, data ] = await client.auth.getUser()
+  const [err, data] = await client.auth.getUser()
 })
