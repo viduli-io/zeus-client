@@ -11,7 +11,7 @@ import {
   UpdateFilter,
   UpdateResult,
 } from './types'
-import { toArrayOrObject } from './utilities'
+import { toArrayOrObject } from './util'
 
 export class CollectionQueryBuilder<
   TDoc extends { id: string }
